@@ -396,50 +396,50 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
     
         // constants:
             // Type
-            t: {
-                0: "PASS",
-                1: "FAIL",
-                2: "PROMPT",
-                3: "FINALLY"
-            },
+            t: [
+                "PASS",
+                "FAIL",
+                "PROMPT",
+                "FINALLY"
+            ],
 
             // Reasons
-            r: {
-                0: "TIMEOUT",
-                1: "NO_SOUND_DETECTED"
-            },
+            r: [
+                "TIMEOUT",
+                "NO_SOUND_DETECTED"
+            ],
 
             // Message
-            m: {
-                0: "WEBRTC_WAITING_FOR_MICROPHONE",
-                1: "DETECTING_MICROPHONE_INPUT",
-                2: "ALLOW_MICROPHONE_ACCESS",
-                3: "MICROPHONE_DETECTED",
+            m: [
+                "WEBRTC_WAITING_FOR_MICROPHONE",
+                "DETECTING_MICROPHONE_INPUT",
+                "ALLOW_MICROPHONE_ACCESS",
+                "MICROPHONE_DETECTED",
                 
-                4: "FLASH_WAITING_FOR_MICROPHONE",
-                5: "FLASH_MICROPHONE_DETECTED",
+                "FLASH_WAITING_FOR_MICROPHONE",
+                "FLASH_MICROPHONE_DETECTED",
                 
-                6: "NO_AVAILABLE_MEDIA",
-                7: "NO_MICROPHONE_DETECTED",
+                "NO_AVAILABLE_MEDIA",
+                "NO_MICROPHONE_DETECTED",
 
-                8: "UNABLE_TO_ACCESS_USER_MICROPHONE",
+                "UNABLE_TO_ACCESS_USER_MICROPHONE",
 
-                9: "MICROPHONE_RESPONSE_TIME",
-                10: "NUMBER_OF_MICROPHONES",
-                11: "PLEASE_WAIT"
-            },
+                "MICROPHONE_RESPONSE_TIME",
+                "NUMBER_OF_MICROPHONES",
+                "PLEASE_WAIT"
+            ],
 
             // Service
-            s: {
-                0: "WEBRTC",
-                1: "FLASH",
-                2: "USER_MEDIA_MICROPHONE",
-                3: "FLASH_MICROPHONE"
-            },
+            s: [
+                "WEBRTC",
+                "FLASH",
+                "USER_MEDIA_MICROPHONE",
+                "FLASH_MICROPHONE"
+            ],
 
             // typeof
-            o: {
-                0: "string",
-                1: "function"
-            }
+            o: [
+                "string",
+                "function"
+            ]
         }));
