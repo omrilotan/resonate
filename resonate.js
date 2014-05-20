@@ -242,7 +242,7 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                 finished = true;
                 next(false,
                         constants.r[0]);    // TIMEOUT
-            }, (5 * 1000)),
+            }, (15 * 1000)),
             object,
             param,
             embed,
