@@ -1,0 +1,181 @@
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+        <title>
+            Audio Call Feasible
+        </title>
+        <style>
+* { margin:0; padding:0; border:0; }
+html { height:100%; }
+body {
+    font:normal 16px/24px sans-serif;
+}
+.button {
+    display:block;
+    border:3px outset #aaa;
+    background:#ddd;
+    color:#fff;
+    text-align:center;
+    font-size:48px;
+    line-height:96px;
+    border-radius:16px;
+    cursor:pointer;
+    margin:1em;
+}
+.button:hover {
+    border:3px inset #aaa;
+    color:#bbb;
+}
+.message {
+    width:29%;
+    min-height:100px;
+    font-size:13px;
+    line-height:16px;
+    border-radius:5px;
+    background:#aaa;
+    color:white;
+    text-align:center;
+    padding:1em 1%;
+    float:left;
+    margin:1em 1%;
+    white-space:pre-line;
+}
+.message.fail {
+    background:#a00;
+}
+.message.finish {
+    background:#0a0;
+}
+.beat {
+    text-align:center;
+    height:100px;
+    line-height:100px;
+    -webkit-transition: all .6s cubic-bezier(.5, -.75, .75, 1.25);
+    -moz-transition:    all .6s cubic-bezier(.5, -.75, .75, 1.25);
+    -ms-transition:     all .6s cubic-bezier(.5, -.75, .75, 1.25);
+    -o-transition:      all .6s cubic-bezier(.5, -.75, .75, 1.25);
+    transition:         all .6s cubic-bezier(.5, -.75, .75, 1.25);
+    font-size:10px;
+}
+.beat.open {
+    font-size:64px;
+}
+.beat .heart {
+    display:inline-block;
+    width:1em;
+    height:1em;
+    border-radius:1em;
+    vertical-align:middle;
+    background:#0a0 url(data:image/gif;base64,R0lGODlhMAAwAPcGAP/tH4JCJkdO0O6/i9EjGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ1NjYxLCAyMDEyLzAyLzA2LTE0OjU2OjI3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo2N0ZDQUExQ0UwMjAxMUUzOUZCNURFMDNEQkIzRUM2QSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo2N0ZDQUExREUwMjAxMUUzOUZCNURFMDNEQkIzRUM2QSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjY3RkNBQTFBRTAyMDExRTM5RkI1REUwM0RCQjNFQzZBIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjY3RkNBQTFCRTAyMDExRTM5RkI1REUwM0RCQjNFQzZBIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAQAABgAsAAAAADAAMAAACP8ADQgcSLCgwYMIEypcyLChw4cQI0qcSLGixYsYBxLYyLGjR4MDQooUKdGjyY4gR44sefJkSpUhH7acSROmTJo4Pdp0mLPnxp0NAwgdOhTmv6MkBc58SLSpUaQxlbZk2rSoyqP/khpYutDqAK9Ps8IMaZKhV7BXoY4t21WoSLQjsY4l+7FtgLdO58qdy9Gs25BV5w7Yu3aj37uA844lDLOvXbhhsUo+6jioYsGTM/+rfBhyWs1YOUcUTJouSoqlSbOdmFrw6oQ5BcieKVvAa4FDDcae3bL2bQO5C+623Zv3aYJwfRLwXVyAwcAqlTM/Wfv5ZdPDacu2TtQ1ztrgwwNpGB9eAPTCNMuXHw+g/PnG39WDZ+++6UCtA6evJy+/PtH7URGkn3j89QdeVQAOYNCA8xVooGwIFlTVUA9WeKB9Ek4YgIUcRoichhxa6KGGG4a4HUUkmnjiRCmqWJGHGTkEY4ydCUUjQwEBADs=) center center no-repeat;
+    box-shadow:inset 0 0 15px #000;
+}
+        </style>
+    </head>
+    <body>
+        <a class="button" id="test">test</a>
+        <div class="beat" id="voice_detection_beat">
+            <span class="heart"></span>
+        </div>
+
+        <div id="results"></div>
+        <script src="resonate.js"></script>
+        <script>
+var translations = {
+    WEBRTC_WAITING_FOR_MICROPHONE: "Detected webRTC communication\n\nWaiting for microphone access",
+    DETECTING_MICROPHONE_INPUT: "Waiting for microphone input",
+    ALLOW_MICROPHONE_ACCESS: "Please allow microphone access",
+    MICROPHONE_DETECTED: "Microphone detected, All clear!",
+    
+    FLASH_WAITING_FOR_MICROPHONE: "Detected Flash communication, Waiting for microphone access",
+    FLASH_MICROPHONE_DETECTED: "Microphone detected, All clear!",
+    
+    NO_AVAILABLE_MEDIA: "No supported media. Can not engage voice",
+    NO_MICROPHONE_DETECTED: "No microphone detected. Can not engage voice",
+
+    UNABLE_TO_ACCESS_USER_MICROPHONE: "Unable to access your microphone",
+
+    MICROPHONE_RESPONSE_TIME: "Microphone response time:",
+
+    NUMBER_OF_MICROPHONES: "Number of microphones detected:",
+
+    PLEASE_WAIT: "Still checking, please hold",
+
+    TIMEOUT: "Test has timed out",
+    NO_SOUND_DETECTED: "No sound was heard"
+};
+var addMessage = function (message, options) {
+    
+    options = options || {};
+    var div = document.createElement("div");
+    div.className = "message" + (typeof options.className === "string" ? " " + options.className : "");
+    div.innerHTML = message;
+    results.appendChild(div);
+
+};
+document.getElementById("test").onclick = function () {
+    var results = document.getElementById("results");
+    var report = function report () {
+        var options,
+            message,
+            args = [].slice.call(arguments, 0),
+            type = args.shift();
+        if (typeof args[args.length - 1] === "object") {
+            options = args.pop();
+        }
+        options = options || {};
+        message = (function (messages) {
+            var collection = [];
+            messages.forEach(function (message) {
+                collection.push(typeof translations[message] === "string" ?
+                        translations[message] :
+                        message);
+            });
+            return collection.join("\n\n");
+        }(args));
+        switch (type) {
+            case "PROMPT":
+                live();
+                addMessage(message, options);
+                break;
+            case "PASS":
+                live();
+                addMessage(message, options);
+                break;
+            case "FAIL":
+                live();
+                options.className = "fail";
+                addMessage(message, options);
+                break;
+            case "FINALLY":
+                options.className = "finish";
+                addMessage("Let's a go!", options);
+                clearTimeout(timer);
+                setTimeout(function () {
+                    voice_detection_beat.classList.add("open");
+                }, 600);
+                break;
+            // no default
+        }
+    };
+    var timer;
+    var voice_detection_beat = document.getElementById("voice_detection_beat");
+    var live = function live () {
+        voice_detection_beat.classList.add("open");
+        timer = setTimeout(function () { voice_detection_beat.classList.remove("open"); }, 400);
+    };
+
+    results.innerHTML = "";
+    
+    resonate({
+        FLASH_MIC_TEST_SWIFF: "mic.swf"
+    });
+
+    resonate.check(report);
+};
+        </script>
+    </body>
+</html>
