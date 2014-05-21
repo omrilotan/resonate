@@ -37,12 +37,13 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
         var limits = {
                 fail: 7 * 1000,    // Total time after which the test is considered to have failed
                 allow: 5 * 1000,    // After this time a message is prompted to allow microphone access
-                silence: 5 * 1000,    // After microphone access was granted, time to wait for sound
+                silence: 20 * 1000,    // After microphone access was granted, time to wait for sound
             },
 
             timeoutInervals = 0,
 
             finished = false,    // prevent repetitive tests
+            microphone_started_working = false,
             
             // Microphone response time measurement
             start = (new Date()).getTime(),
@@ -61,7 +62,7 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
             },
 
             failTimer = function resonate$_failTimer () {
-                if (++timeoutInervals < 3) {
+                if (++timeoutInervals < 3 && !finished) {
                     callback(constants.t[2],    // PROMPT
                             constants.m[11]);    // PLEASE_WAIT
                     timers.fail = setTimeout(failTimer, limits.fail);
@@ -152,15 +153,20 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                 }
 
                 // First part worked, clear timers
-                clearTimers();
-
-                // Silence timer: in case we can't hear anything within 5 seconds
-                timers.silence = setTimeout(function resonate$_silenceTimer () {
-                    finished = true;
+                if (!microphone_started_working) {
+                    microphone_started_working = true;
+                    timeoutInervals = 0;
                     clearTimers();
-                    next(false,    // FAIL
-                            constants.r[1]);    // NO_SOUND_DETECTED
-                }, limits.silence);
+                    timers.fail = setTimeout(failTimer, limits.fail);
+
+                    // Silence timer: in case we can't hear anything within 5 seconds
+                    timers.silence = setTimeout(function resonate$_silenceTimer () {
+                        finished = true;
+                        clearTimers();
+                        next(false,    // FAIL
+                                constants.r[1]);    // NO_SOUND_DETECTED
+                    }, limits.silence);
+                }
 
                 // Count the bits in the incoming frequency
                 var array = new Uint8Array(analyser.frequencyBinCount),
@@ -299,9 +305,9 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                     document[name],
                 mics = movie.micNames();
 
-            // callback(constants.t[2],    // PROMPT
-            //         constants.m[10],    // NUMBER_OF_MICROPHONES
-            //         mics.length);
+            callback(constants.t[2],    // PROMPT
+                    constants.m[10],    // LIST_OF_MICROPHONES
+                    mics.join(", "));
             next(mics.length > 0);
             clearTimeout(timer);
             delete window.flashLoaded;
@@ -425,7 +431,7 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                 "UNABLE_TO_ACCESS_USER_MICROPHONE",
 
                 "MICROPHONE_RESPONSE_TIME",
-                "NUMBER_OF_MICROPHONES",
+                "LIST_OF_MICROPHONES",
                 "PLEASE_WAIT"
             ],
 

@@ -33,18 +33,19 @@ body {
     border:3px inset #aaa;
     color:#bbb;
 }
+.button,
 .message {
-    width:29%;
-    min-height:100px;
+    padding:8px 16px;
+    margin:8px 16px;
+}
+.message {
+    display:block;
     font-size:13px;
     line-height:16px;
     border-radius:5px;
     background:#aaa;
     color:white;
     text-align:center;
-    padding:1em 1%;
-    float:left;
-    margin:1em 1%;
     white-space:pre-line;
 }
 .message.fail {
@@ -55,8 +56,8 @@ body {
 }
 .beat {
     text-align:center;
-    height:100px;
-    line-height:100px;
+    height:64px;
+    line-height:64px;
     -webkit-transition: all .6s cubic-bezier(.5, -.75, .75, 1.25);
     -moz-transition:    all .6s cubic-bezier(.5, -.75, .75, 1.25);
     -ms-transition:     all .6s cubic-bezier(.5, -.75, .75, 1.25);
@@ -92,7 +93,7 @@ body {
         <script src="resonate.js"></script>
         <script>
 var translations = {
-    WEBRTC_WAITING_FOR_MICROPHONE: "Detected webRTC communication\n\nWaiting for microphone access",
+    WEBRTC_WAITING_FOR_MICROPHONE: "Detected webRTC communication\nWaiting for microphone access",
     DETECTING_MICROPHONE_INPUT: "Waiting for microphone input",
     ALLOW_MICROPHONE_ACCESS: "Please allow microphone access",
     MICROPHONE_DETECTED: "Microphone detected, All clear!",
@@ -107,7 +108,7 @@ var translations = {
 
     MICROPHONE_RESPONSE_TIME: "Microphone response time:",
 
-    NUMBER_OF_MICROPHONES: "Number of microphones detected:",
+    LIST_OF_MICROPHONES: "List of detected microphones:",
 
     PLEASE_WAIT: "Still checking, please hold",
 
@@ -141,7 +142,7 @@ document.getElementById("test").onclick = function () {
                         translations[message] :
                         message);
             });
-            return collection.join("\n\n");
+            return collection.join("\n");
         }(args));
         switch (type) {
             case "PROMPT":
