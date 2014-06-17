@@ -1,4 +1,31 @@
-var resonate = (function __resonate__ (window, navigator, document, constants, undefined) {
+var resonate = (function __resonate__ (window,
+        navigator,
+        document,
+        PASS,
+        FAIL,
+        PROMPT,
+        FINALLY,
+        TIMEOUT,
+        NO_SOUND_DETECTED,
+        WEBRTC_WAITING_FOR_MICROPHONE,
+        DETECTING_MICROPHONE_INPUT,
+        ALLOW_MICROPHONE_ACCESS,
+        MICROPHONE_DETECTED,        
+        FLASH_WAITING_FOR_MICROPHONE,
+        FLASH_MICROPHONE_DETECTED,
+        NO_AVAILABLE_MEDIA,
+        NO_MICROPHONE_DETECTED,
+        UNABLE_TO_ACCESS_USER_MICROPHONE,
+        MICROPHONE_RESPONSE_TIME,
+        LIST_OF_MICROPHONES,
+        PLEASE_WAIT,
+        WEBRTC,
+        FLASH,
+        USER_MEDIA_MICROPHONE,
+        FLASH_MICROPHONE,
+        STRING,
+        FUNCTION,
+        undefined) {
 
         // Interface
     var exports = {},
@@ -13,27 +40,19 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
 
         toArray = function resonate$_toArray (args) {
             return [].slice.call(args, 0);
-        },
-
-        register = function resonate$_register (who, what, fn) {
-            if (typeof fn === constants.o[1]) {
-                fn(who, what);
-            }
         };
 
     // WEBRTC
-    detect[constants.s[0]] = function resonate$_detect$WEBRTC (next) {
-        var result;
+    detect[WEBRTC] = function resonate$_detect$WEBRTC (next) {
         window.RTCPeerConnection = window.RTCPeerConnection ||
                 window.webkitRTCPeerConnection ||
                 window.mozRTCPeerConnection ||
                 window.msRTCPeerConnection;
 
-        next(typeof window.RTCPeerConnection === constants.o[1]);
+        next(typeof window.RTCPeerConnection === FUNCTION);
     };
 
-    // USER_MEDIA_MICROPHONE
-    detect[constants.s[2]] = function resonate$_detect$USER_MEDIA_MICROPHONE (next) {
+    detect[USER_MEDIA_MICROPHONE] = function resonate$_detect$USER_MEDIA_MICROPHONE (next) {
         var limits = {
                 fail: 7 * 1000,    // Total time after which the test is considered to have failed
                 allow: 5 * 1000,    // After this time a message is prompted to allow microphone access
@@ -63,8 +82,8 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
 
             failTimer = function resonate$_failTimer () {
                 if (++timeoutInervals < 3 && !finished) {
-                    callback(constants.t[2],    // PROMPT
-                            constants.m[11]);    // PLEASE_WAIT
+                    callback(PROMPT,
+                            PLEASE_WAIT);
                     timers.fail = setTimeout(failTimer, limits.fail);
                 } else {
                     finished = true;
@@ -72,7 +91,7 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
 
                     end = (new Date()).getTime();
                     next(false,
-                        constants.r[0],    // TIMEOUT
+                        TIMEOUT,
                         (end - start) / 1000);
                 }
             },
@@ -92,7 +111,7 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                 window.msAudioContext;
 
         // No available getUserMedia method. abort
-        if (typeof navigator.getUserMedia !== constants.o[1]) {
+        if (typeof navigator.getUserMedia !== FUNCTION) {
             next(false);
             return;
         }
@@ -104,8 +123,8 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
         // Allow timer: when waiting for the "Allow" of microphone use
         timers.allow = setTimeout(function resonate$_allowTimer () {
             clearTimeout(timers.allow);
-            callback(constants.t[2],    // PROMPT
-                    constants.m[2]);    // ALLOW_MICROPHONE_ACCESS
+            callback(PROMPT,
+                    ALLOW_MICROPHONE_ACCESS);
         }, limits.allow);
 
         success = function resonate$_getUserMediaSuccess (stream) {
@@ -119,15 +138,15 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                 microphone,
                 node;
             try {
-                var audioContext = new window.AudioContext(),
-                    analyser = audioContext.createAnalyser(),
+                    audioContext = new window.AudioContext();
+                    analyser = audioContext.createAnalyser();
                     microphone = audioContext.createMediaStreamSource(stream);
-                if (typeof audioContext.createJavaScriptNode === constants.o[1]) {
+                if (typeof audioContext.createJavaScriptNode === FUNCTION) {
                     node = audioContext.createJavaScriptNode(2048, 1, 1);
-                } else if (typeof audioContext.createScriptProcessor === constants.o[1]) {
+                } else if (typeof audioContext.createScriptProcessor === FUNCTION) {
                     node = audioContext.createScriptProcessor(2048, 1, 1);
                 } else {
-                    throw new Error(constants.m[8]);    // UNABLE_TO_ACCESS_USER_MICROPHONE
+                    throw new Error(UNABLE_TO_ACCESS_USER_MICROPHONE);
                 }
             } catch (err) {
                 clearTimers();
@@ -142,8 +161,8 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
             analyser.connect(node);
             node.connect(audioContext.destination);
 
-            callback(constants.t[2],    // PROMPT
-                    constants.m[1]);    // DETECTING_MICROPHONE_INPUT
+            callback(PROMPT,
+                    DETECTING_MICROPHONE_INPUT);
             
             // Now we wait to hear the microphone
             // NOTE: This may take a couple of seconds to kick in
@@ -164,7 +183,7 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                         finished = true;
                         clearTimers();
                         next(false,    // FAIL
-                                constants.r[1]);    // NO_SOUND_DETECTED
+                                NO_SOUND_DETECTED);
                     }, limits.silence);
                 }
 
@@ -188,21 +207,21 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                     clearTimers();
 
                     end = (new Date()).getTime();
-                    callback(constants.t[2],    // PROMPT
-                            constants.m[9],    // MICROPHONE_RESPONSE_TIME
+                    callback(PROMPT,
+                            MICROPHONE_RESPONSE_TIME,
                             (end - start) / 1000);
                     
                     next(true);
                 }
-            }
+            };
         };
         fail = function resonate$_getUserMediaFail () {
             clearTimers();
             if (finished === true) {
                 return;
             }
-            callback(constants.t[1],    // FAIL
-                    constants.m[8]);    // UNABLE_TO_ACCESS_USER_MICROPHONE
+            callback(FAIL,
+                    UNABLE_TO_ACCESS_USER_MICROPHONE);
         };
 
         // Begin
@@ -210,7 +229,7 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
     };
 
     // FLASH
-    detect[constants.s[1]] = function resonate$_detect$FLASH (next) {
+    detect[FLASH] = function resonate$_detect$FLASH (next) {
         var type = "application/x-shockwave-flash",
             plugins = navigator.plugins,
             mimeTypes,
@@ -242,16 +261,14 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
     };
 
     // FLASH_MICROPHONE
-    detect[constants.s[3]] = function resonate$_detect$FLASH_MICROPHONE (next) {
+    detect[FLASH_MICROPHONE] = function resonate$_detect$FLASH_MICROPHONE (next) {
         var finished = false,
             timer = setTimeout(function resonate$_failTimeout () {
                 finished = true;
                 next(false,
-                        constants.r[0]);    // TIMEOUT
+                        TIMEOUT);
             }, (15 * 1000)),
             object,
-            param,
-            embed,
             name = "flash_mic_detect",
             src = FLASH_MIC_TEST_SWIFF,
             first = document.getElementById(name),
@@ -305,8 +322,8 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
                     document[name],
                 mics = movie.micNames();
 
-            callback(constants.t[2],    // PROMPT
-                    constants.m[10],    // LIST_OF_MICROPHONES
+            callback(PROMPT,
+                    LIST_OF_MICROPHONES,
                     mics.join(", "));
             next(mics.length > 0);
             clearTimeout(timer);
@@ -317,135 +334,127 @@ var resonate = (function __resonate__ (window, navigator, document, constants, u
 
     exports = function resonate (options) {
         options = options || {};
-        if (typeof options.FLASH_MIC_TEST_SWIFF === constants.o[0]) {
+        if (typeof options.FLASH_MIC_TEST_SWIFF === STRING) {
             FLASH_MIC_TEST_SWIFF = options.FLASH_MIC_TEST_SWIFF;
         }
     };
 
     exports.check = function resonate$check (fn) {
         var responses = {};
-        if (typeof fn !== constants.o[1]) {
+        if (typeof fn !== FUNCTION) {
             return;
         }
         callback = fn;
 
         // WEBRTC
-        responses[constants.s[0]] = function resonate$_responses$WEBRTC () {
+        responses[WEBRTC] = function resonate$_responses$WEBRTC () {
             var args = toArray(arguments),
                 condition = args.shift();
-            args.unshift(constants.t[2],    // PROMPT
-                    constants.m[0]);    // WEBRTC_WAITING_FOR_MICROPHONE
+            args.unshift(PROMPT,
+                    WEBRTC_WAITING_FOR_MICROPHONE);
             if (!!condition) {
                 callback.apply(null, args);    // WEBRTC_WAITING_FOR_MICROPHONE
-                detect[constants.s[2]](responses[constants.s[2]]);
+                detect[USER_MEDIA_MICROPHONE](responses[USER_MEDIA_MICROPHONE]);
             } else {
 
                 // FLASH
-                detect[constants.s[1]](responses[constants.s[1]]);
+                detect[FLASH](responses[FLASH]);
             }
         };
 
         // USER_MEDIA_MICROPHONE
-        responses[constants.s[2]] = function resonate$_responses$USER_MEDIA_MICROPHONE () {
+        responses[USER_MEDIA_MICROPHONE] = function resonate$_responses$USER_MEDIA_MICROPHONE () {
             var args = toArray(arguments),
                 condition = args.shift();
             if (!!condition) {
-                args.unshift(constants.t[3],    // FINALLY
-                        constants.m[3]);    // MICROPHONE_DETECTED
+                args.unshift(FINALLY,
+                        MICROPHONE_DETECTED);
                 callback.apply(null, args);
             } else {
-                args.unshift(constants.t[1],    // FAIL
-                        constants.m[7]);    // NO_MICROPHONE_DETECTED
+                args.unshift(FAIL,
+                        NO_MICROPHONE_DETECTED);
                 callback.apply(null, args);
             }
         };
 
         // FLASH
-        responses[constants.s[1]] = function () {
+        responses[FLASH] = function () {
             var args = toArray(arguments),
                 condition = args.shift();
             if (!!condition) {
-                args.unshift(constants.t[2],    // PROMPT
-                        constants.m[4]);    // FLASH_WAITING_FOR_MICROPHONE
+                args.unshift(PROMPT,
+                        FLASH_WAITING_FOR_MICROPHONE);
                 callback.apply(null, args);
-                detect[constants.s[3]](responses[constants.s[3]]);
+                detect[FLASH_MICROPHONE](responses[FLASH_MICROPHONE]);
             } else {
-                args.unshift(constants.t[1],    // FAIL
-                        constants.m[6]);    // NO_AVAILABLE_MEDIA
+                args.unshift(FAIL,
+                        NO_AVAILABLE_MEDIA);
                 callback.apply(null, args);
             }
         };
 
         // FLASH_MICROPHONE
-        responses[constants.s[3]] = function () {
+        responses[FLASH_MICROPHONE] = function () {
             var args = toArray(arguments),
                 condition = args.shift();
             if (!!condition &&
-                    typeof FLASH_MIC_TEST_SWIFF === constants.o[0]) {
-                args.unshift(constants.t[3],    // FINALLY
-                        constants.m[5]);    // FLASH_MICROPHONE_DETECTED
+                    typeof FLASH_MIC_TEST_SWIFF === STRING) {
+                args.unshift(FINALLY,
+                        FLASH_MICROPHONE_DETECTED);
                 callback.apply(null, args);
             } else {
-                args.unshift(constants.t[1],    // FAIL
-                        constants.m[7]);    // NO_MICROPHONE_DETECTED
+                args.unshift(FAIL,
+                        NO_MICROPHONE_DETECTED);
                 callback.apply(null, args);
             }
         };
 
         // Begin
-        detect[constants.s[0]](responses[constants.s[0]]);
+        detect[WEBRTC](responses[WEBRTC]);
     };
 
     return exports;
 
-}(window, navigator, document, {
+}(window,
+        navigator,
+        document,
     
-        // constants:
-            // Type
-            t: [
-                "PASS",
-                "FAIL",
-                "PROMPT",
-                "FINALLY"
-            ],
+// constants:
+    // Type
+        "PASS",
+        "FAIL",
+        "PROMPT",
+        "FINALLY",
 
-            // Reasons
-            r: [
-                "TIMEOUT",
-                "NO_SOUND_DETECTED"
-            ],
+    // Reasons
+        "TIMEOUT",
+        "NO_SOUND_DETECTED",
+   
+    // Message
+        "WEBRTC_WAITING_FOR_MICROPHONE",
+        "DETECTING_MICROPHONE_INPUT",
+        "ALLOW_MICROPHONE_ACCESS",
+        "MICROPHONE_DETECTED",
+        
+        "FLASH_WAITING_FOR_MICROPHONE",
+        "FLASH_MICROPHONE_DETECTED",
+        
+        "NO_AVAILABLE_MEDIA",
+        "NO_MICROPHONE_DETECTED",
 
-            // Message
-            m: [
-                "WEBRTC_WAITING_FOR_MICROPHONE",
-                "DETECTING_MICROPHONE_INPUT",
-                "ALLOW_MICROPHONE_ACCESS",
-                "MICROPHONE_DETECTED",
-                
-                "FLASH_WAITING_FOR_MICROPHONE",
-                "FLASH_MICROPHONE_DETECTED",
-                
-                "NO_AVAILABLE_MEDIA",
-                "NO_MICROPHONE_DETECTED",
+        "UNABLE_TO_ACCESS_USER_MICROPHONE",
 
-                "UNABLE_TO_ACCESS_USER_MICROPHONE",
+        "MICROPHONE_RESPONSE_TIME",
+        "LIST_OF_MICROPHONES",
+        "PLEASE_WAIT",
 
-                "MICROPHONE_RESPONSE_TIME",
-                "LIST_OF_MICROPHONES",
-                "PLEASE_WAIT"
-            ],
+    // Service
+        "WEBRTC",
+        "FLASH",
+        "USER_MEDIA_MICROPHONE",
+        "FLASH_MICROPHONE",
 
-            // Service
-            s: [
-                "WEBRTC",
-                "FLASH",
-                "USER_MEDIA_MICROPHONE",
-                "FLASH_MICROPHONE"
-            ],
-
-            // typeof
-            o: [
-                "string",
-                "function"
-            ]
-        }));
+    // typeof
+        "string",
+        "function"
+    ));
