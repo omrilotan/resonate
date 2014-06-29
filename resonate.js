@@ -25,6 +25,7 @@ var resonate = (function __resonate__ (window,
         FLASH_MICROPHONE,
         STRING,
         FUNCTION,
+        OBJECT,
         undefined) {
 
         // Interface
@@ -32,6 +33,16 @@ var resonate = (function __resonate__ (window,
 
         // Detection methods
         detect = {},
+
+        streams = [],
+        stopStreams = function () {
+            forEach(streams, function (stream) {
+                if (typeof stream === OBJECT &&
+                        typeof stream.stop === FUNCTION) {
+                    stream.stop();
+                }
+            });
+        },
 
         // flash file tests microphone presence
         FLASH_MIC_TEST_SWIFF,
@@ -129,6 +140,8 @@ var resonate = (function __resonate__ (window,
 
         success = function resonate$_getUserMediaSuccess (stream) {
             
+            streams.push(stream);
+
             // Microphone access granted
             clearTimeout(timers.allow);
             start = (new Date()).getTime();
@@ -146,11 +159,13 @@ var resonate = (function __resonate__ (window,
                 } else if (typeof audioContext.createScriptProcessor === FUNCTION) {
                     node = audioContext.createScriptProcessor(2048, 1, 1);
                 } else {
+                    stopStreams();
                     throw new Error(UNABLE_TO_ACCESS_USER_MICROPHONE);
                 }
             } catch (err) {
                 clearTimers();
                 next(false, err.message);
+                stopStreams();
                 return;
             }
 
@@ -185,6 +200,7 @@ var resonate = (function __resonate__ (window,
                         next(false,    // FAIL
                                 NO_SOUND_DETECTED);
                     }, limits.silence);
+                    stopStreams();
                 }
 
                 // Count the bits in the incoming frequency
@@ -211,6 +227,7 @@ var resonate = (function __resonate__ (window,
                             MICROPHONE_RESPONSE_TIME,
                             (end - start) / 1000);
                     
+                    stopStreams();
                     next(true);
                 }
             };
@@ -290,7 +307,7 @@ var resonate = (function __resonate__ (window,
             first.parentNode.removeChild(first);
         }
 
-        object = createElementWithAttributes("object", [
+        object = createElementWithAttributes(OBJECT, [
             { name: "classid", value: "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" },
             { name: "codebase", value: "http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" },
             { name: "width", value: "1" },
@@ -456,5 +473,6 @@ var resonate = (function __resonate__ (window,
 
     // typeof
         "string",
-        "function"
+        "function",
+        "object"
     ));
