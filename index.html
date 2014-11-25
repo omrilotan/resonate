@@ -179,7 +179,12 @@ document.getElementById("test").onclick = function () {
     results.innerHTML = "";
     
     resonate({
-        FLASH_MIC_TEST_SWIFF: "mic.swf"
+        FLASH_MIC_TEST_SWIFF: "mic.swf",
+        limits: {
+            fail: 7,
+            allow: 5,
+            silence: 20
+        }
     });
 
     resonate.check(report);

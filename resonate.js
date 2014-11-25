@@ -29,14 +29,16 @@ var resonate = (function __resonate__ (window,
         undefined) {
 
         // Interface
-    var exports = {},
+    var resonate = {},
 
         // Detection methods
         detect = {},
 
+        limits = {},
+
         streams = [],
         stopStreams = function () {
-            forEach(streams, function (stream) {
+            streams.forEach(function (stream) {
                 if (typeof stream === OBJECT &&
                         typeof stream.stop === FUNCTION) {
                     stream.stop();
@@ -64,13 +66,7 @@ var resonate = (function __resonate__ (window,
     };
 
     detect[USER_MEDIA_MICROPHONE] = function resonate$_detect$USER_MEDIA_MICROPHONE (next) {
-        var limits = {
-                fail: 7 * 1000,    // Total time after which the test is considered to have failed
-                allow: 5 * 1000,    // After this time a message is prompted to allow microphone access
-                silence: 20 * 1000,    // After microphone access was granted, time to wait for sound
-            },
-
-            timeoutInervals = 0,
+        var timeoutInervals = 0,
 
             finished = false,    // prevent repetitive tests
             microphone_started_working = false,
@@ -164,8 +160,8 @@ var resonate = (function __resonate__ (window,
                 }
             } catch (err) {
                 clearTimers();
-                next(false, err.message);
                 stopStreams();
+                next(false, err.message);
                 return;
             }
 
@@ -197,10 +193,10 @@ var resonate = (function __resonate__ (window,
                     timers.silence = setTimeout(function resonate$_silenceTimer () {
                         finished = true;
                         clearTimers();
+                        stopStreams();
                         next(false,    // FAIL
                                 NO_SOUND_DETECTED);
                     }, limits.silence);
-                    stopStreams();
                 }
 
                 // Count the bits in the incoming frequency
@@ -349,14 +345,26 @@ var resonate = (function __resonate__ (window,
 
     };
 
-    exports = function resonate (options) {
+    resonate = function resonate (options) {
         options = options || {};
         if (typeof options.FLASH_MIC_TEST_SWIFF === STRING) {
             FLASH_MIC_TEST_SWIFF = options.FLASH_MIC_TEST_SWIFF;
         }
+
+        // Hook up test constants (or defaults)
+        options.limits = options.limits || {};
+
+        // Total time after which the test is considered to have failed
+        limits.fail    = (options.limits.fail    || 7)  * 1000;
+        
+        // After this time a message is prompted to allow microphone access
+        limits.allow   = (options.limits.allow   || 5)  * 1000;
+        
+        // After microphone access was granted, time to wait for sound
+        limits.silence = (options.limits.silence || 20) * 1000;
     };
 
-    exports.check = function resonate$check (fn) {
+    resonate.check = function resonate$check (fn) {
         var responses = {};
         if (typeof fn !== FUNCTION) {
             return;
@@ -430,7 +438,7 @@ var resonate = (function __resonate__ (window,
         detect[WEBRTC](responses[WEBRTC]);
     };
 
-    return exports;
+    return resonate;
 
 }(window,
         navigator,
