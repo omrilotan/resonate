@@ -91,6 +91,15 @@ body {
     overflow:hidden;
     vertical-align:middle;
 }
+textarea {
+    display:block;
+    width:95%;
+    border:1px solid #999;
+    height:100px;
+    margin:0 auto;
+    background:#ccc;
+    color:#666;
+}
         </style>
     </head>
     <body>
@@ -105,6 +114,10 @@ body {
         </div>
 
         <div id="results"></div>
+        <br />
+        <br />
+        <center>Summary:</center>
+        <textarea id="summary"></textarea>
         <script src="classList.js"></script>
         <script src="resonate.js"></script>
         <script>
@@ -131,6 +144,14 @@ var translations = {
     TIMEOUT: "Test has timed out",
     NO_SOUND_DETECTED: "No sound was heard"
 };
+
+var messageCollection = [];
+
+var summary = document.getElementById("summary");
+summary.onclick = function () {
+    summary.select();
+};
+
 var addMessage = function (message, options) {
     
     options = options || {};
@@ -139,6 +160,8 @@ var addMessage = function (message, options) {
     div.innerHTML = message;
     results.appendChild(div);
 
+    messageCollection.push(message);
+    summary.value = messageCollection.join("\n");
 };
 document.getElementById("test").onclick = function () {
     var results = document.getElementById("results");
