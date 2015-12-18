@@ -234,8 +234,13 @@ var resonate = (function __resonate__ (window,
             if (finished === true) {
                 return;
             }
-            callback(FAIL,
-                    UNABLE_TO_ACCESS_USER_MICROPHONE);
+            if (!~window.location.protocol.indexOf("s")) {
+                callback(FAIL,
+                        NON_SECURE_CONNECTION);
+            } else {
+                callback(FAIL,
+                        UNABLE_TO_ACCESS_USER_MICROPHONE);
+            }
         };
 
         // Begin
@@ -392,10 +397,7 @@ var resonate = (function __resonate__ (window,
         responses[USER_MEDIA_MICROPHONE] = function resonate$_responses$USER_MEDIA_MICROPHONE () {
             var args = toArray(arguments),
                 condition = args.shift();
-            if (!~window.location.protocol.indexOf("s")) {
-                args.unshift(FAIL,
-                        NON_SECURE_CONNECTION);
-            } else if (!!condition) {
+            if (!!condition) {
                 args.unshift(FINALLY,
                         MICROPHONE_DETECTED);
             } else {
