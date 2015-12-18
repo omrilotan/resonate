@@ -392,7 +392,7 @@ var resonate = (function __resonate__ (window,
         responses[USER_MEDIA_MICROPHONE] = function resonate$_responses$USER_MEDIA_MICROPHONE () {
             var args = toArray(arguments),
                 condition = args.shift();
-            if (~window.location.protocol.indexOf("s")) {
+            if (!~window.location.protocol.indexOf("s")) {
                 args.unshift(FAIL,
                         NON_SECURE_CONNECTION);
             } else if (!!condition) {
