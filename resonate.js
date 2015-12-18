@@ -7,10 +7,11 @@ var resonate = (function __resonate__ (window,
         FINALLY,
         TIMEOUT,
         NO_SOUND_DETECTED,
+        NON_SECURE_CONNECTION,
         WEBRTC_WAITING_FOR_MICROPHONE,
         DETECTING_MICROPHONE_INPUT,
         ALLOW_MICROPHONE_ACCESS,
-        MICROPHONE_DETECTED,        
+        MICROPHONE_DETECTED,
         FLASH_WAITING_FOR_MICROPHONE,
         FLASH_MICROPHONE_DETECTED,
         NO_AVAILABLE_MEDIA,
@@ -70,11 +71,11 @@ var resonate = (function __resonate__ (window,
 
             finished = false,    // prevent repetitive tests
             microphone_started_working = false,
-            
+
             // Microphone response time measurement
             start = (new Date()).getTime(),
             end,
-            
+
             timers = {},
             clearTimers = function resonate$_clearTimers () {
                 var key;
@@ -123,10 +124,10 @@ var resonate = (function __resonate__ (window,
             return;
         }
 
-        
+
         // Fail timer
         timers.fail = setTimeout(failTimer, limits.fail);
-        
+
         // Allow timer: when waiting for the "Allow" of microphone use
         timers.allow = setTimeout(function resonate$_allowTimer () {
             clearTimeout(timers.allow);
@@ -135,7 +136,7 @@ var resonate = (function __resonate__ (window,
         }, limits.allow);
 
         success = function resonate$_getUserMediaSuccess (stream) {
-            
+
             streams.push(stream);
 
             // Microphone access granted
@@ -174,7 +175,7 @@ var resonate = (function __resonate__ (window,
 
             callback(PROMPT,
                     DETECTING_MICROPHONE_INPUT);
-            
+
             // Now we wait to hear the microphone
             // NOTE: This may take a couple of seconds to kick in
             node.onaudioprocess = function resonate$_audioprocess () {
@@ -213,7 +214,7 @@ var resonate = (function __resonate__ (window,
                 }
 
                 average = values / len;
-                
+
                 if (average > 0) {
                     finished = true;
                     clearTimers();
@@ -222,7 +223,7 @@ var resonate = (function __resonate__ (window,
                     callback(PROMPT,
                             MICROPHONE_RESPONSE_TIME,
                             (end - start) / 1000);
-                    
+
                     stopStreams();
                     next(true);
                 }
@@ -356,10 +357,10 @@ var resonate = (function __resonate__ (window,
 
         // Total time after which the test is considered to have failed
         limits.fail    = (options.limits.fail    || 7)  * 1000;
-        
+
         // After this time a message is prompted to allow microphone access
         limits.allow   = (options.limits.allow   || 5)  * 1000;
-        
+
         // After microphone access was granted, time to wait for sound
         limits.silence = (options.limits.silence || 20) * 1000;
     };
@@ -391,15 +392,17 @@ var resonate = (function __resonate__ (window,
         responses[USER_MEDIA_MICROPHONE] = function resonate$_responses$USER_MEDIA_MICROPHONE () {
             var args = toArray(arguments),
                 condition = args.shift();
-            if (!!condition) {
+            if (~window.location.protocol.indexOf("s")) {
+                args.unshift(FAIL,
+                        NON_SECURE_CONNECTION);
+            } else if (!!condition) {
                 args.unshift(FINALLY,
                         MICROPHONE_DETECTED);
-                callback.apply(null, args);
             } else {
                 args.unshift(FAIL,
                         NO_MICROPHONE_DETECTED);
-                callback.apply(null, args);
             }
+            callback.apply(null, args);
         };
 
         // FLASH
@@ -443,7 +446,7 @@ var resonate = (function __resonate__ (window,
 }(window,
         navigator,
         document,
-    
+
 // constants:
     // Type
         "PASS",
@@ -454,16 +457,17 @@ var resonate = (function __resonate__ (window,
     // Reasons
         "TIMEOUT",
         "NO_SOUND_DETECTED",
-   
+        "NON_SECURE_CONNECTION",
+
     // Message
         "WEBRTC_WAITING_FOR_MICROPHONE",
         "DETECTING_MICROPHONE_INPUT",
         "ALLOW_MICROPHONE_ACCESS",
         "MICROPHONE_DETECTED",
-        
+
         "FLASH_WAITING_FOR_MICROPHONE",
         "FLASH_MICROPHONE_DETECTED",
-        
+
         "NO_AVAILABLE_MEDIA",
         "NO_MICROPHONE_DETECTED",
 

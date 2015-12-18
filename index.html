@@ -126,12 +126,13 @@ var translations = {
     DETECTING_MICROPHONE_INPUT: "Waiting for microphone input",
     ALLOW_MICROPHONE_ACCESS: "Please allow microphone access",
     MICROPHONE_DETECTED: "Microphone detected, All clear!",
-    
+
     FLASH_WAITING_FOR_MICROPHONE: "Detected Flash communication, Waiting for microphone access",
     FLASH_MICROPHONE_DETECTED: "Microphone detected, All clear!",
-    
+
     NO_AVAILABLE_MEDIA: "No supported media. Can not engage voice",
     NO_MICROPHONE_DETECTED: "No microphone detected. Can not engage voice",
+    NON_SECURE_CONNECTION: "Secure connection (https) is required",
 
     UNABLE_TO_ACCESS_USER_MICROPHONE: "Unable to access your microphone",
 
@@ -153,7 +154,7 @@ summary.onclick = function () {
 };
 
 var addMessage = function (message, options) {
-    
+
     options = options || {};
     var div = document.createElement("div");
     div.className = "message" + (typeof options.className === "string" ? " " + options.className : "");
@@ -216,7 +217,7 @@ document.getElementById("test").onclick = function () {
     };
 
     results.innerHTML = "";
-    
+
     resonate({
         FLASH_MIC_TEST_SWIFF: "mic.swf",
         limits: {
